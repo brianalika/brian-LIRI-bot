@@ -2,7 +2,7 @@
 
 //Loading modules
 var Twitter = require('twitter');
-var spotify = require('spotify');
+var Spotify = require('node-spotify-api');
 var request = require('request');
 var fs = require('fs');
 var keys = require("./keys.js");
@@ -12,19 +12,25 @@ var commandParam = process.argv[3];
 var defaultMovie = "Ex Machina";
 var defaultSong = "Radioactive";
 
+require("dotenv").config();
 
+// var spotify = new Spotify(keys.spotify);
+// var client = new Twitter(keys.twitter);
+
+var client = new Twitter ( {
+	consumer_key: process.env.TWITTER_CONSUMER_KEY,
+	consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+	access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+	access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
+})
+  
+var spotify = new Spotify ( {
+	id: process.env.SPOTIFY_ID,
+	secret: process.env.SPOTIFY_SECRET
+} )
 
 var twitterKeys = keys.twitterKeys;
 var tmdbKey = keys.tmdbKey;
-
-var client = new Twitter({
-  consumer_key: twitterKeys.consumer_key,
-  consumer_secret: twitterKeys.consumer_secret,
-  access_token_key: twitterKeys.access_token_key,
-  access_token_secret: twitterKeys.access_token_secret
-});
-
-
 
 //-----------------------FUNCTIONS-----------------------------------------------
 
@@ -60,10 +66,9 @@ function processCommands(command, commandParam){
 
 function getMyTweets(){
 
-	var params = {screen_name: 'jincygeorge8388', count: 20, exclude_replies:true, trim_user:true};
+	var params = {screen_name: 'brian_alika', count: 20, exclude_replies:true, trim_user:true};
 		client.get('statuses/user_timeline', params, function(error, tweets, response) {
 				if (!error) {
-					//console.log(tweets);
 					tweetsArray = tweets;
 
 					for(i=0; i<tweetsArray.length; i++){
@@ -90,7 +95,7 @@ function spotifyThis(song){
     if (err) {
         console.log('Error occurred: ' + err);
         return;
-    }
+	}
 
     var song = data.tracks.items[0];
     console.log("------Artists-----");
